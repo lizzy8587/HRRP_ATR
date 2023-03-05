@@ -1,0 +1,32 @@
+model:
+  name: 'ResNet'
+  weights: False
+  in_channels: 1
+
+
+data:
+  data_path: '/home/lenovo/hrrp2/hrrptest/hrrp_prj/data/soc/'
+#  data_path: 'datasets'
+  train_ratio: 0.9
+  train_path: 'datasets'
+  valid_path: 'datasets'
+  batch_size: 320
+  shuffle: True
+  length: 256
+  cls_num: 9
+
+train:
+  epochs: 2
+  learning_rate: 0.001
+  dropout_ratio: 0.3
+  weight_decay: 0.001
+  momentum: 0.5
+  lr_decay: 0.1
+  lr_step: [50]
+
+
+log:
+  epochs_print: 1
+  log_dir: "runs/ResNet"
+  name: 'ResNet'
+  save_pkl: True

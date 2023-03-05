@@ -1,0 +1,4 @@
+{'model': {'name': 'ResNet', 'weights': False, 'in_channels': 1}, 'data': {'data_path': '/home/lenovo/hrrp2/hrrptest/hrrp_prj/data/soc/', 'train_ratio': 0.9, 'train_path': 'datasets', 'valid_path': 'datasets', 'batch_size': 320, 'shuffle': True, 'length': 256, 'cls_num': 9}, 'train': {'epochs': 2, 'learning_rate': 0.001, 'dropout_ratio': 0.3, 'weight_decay': 0.001, 'momentum': 0.5, 'lr_decay': 0.1, 'lr_step': [50]}, 'log': {'epochs_print': 1, 'log_dir': 'runs/ResNet', 'name': 'ResNet', 'save_pkl': True}}
+[epoch 0/2] loss:1.1195, train_acc:0.6043, val_acc:0.5305
+[epoch 1/2] loss:0.9043, train_acc:0.7019, val_acc:0.6792
+save: runs/ResNet_2023-02-25_21-52-04/ResNet.pkl

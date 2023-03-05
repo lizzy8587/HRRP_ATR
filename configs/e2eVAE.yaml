@@ -1,0 +1,31 @@
+model:
+  name: 'E2EVAE'
+  weights: False
+  in_channels: 1
+  latent_dim: 128
+  cls_num: 9
+
+data:
+  data_path: '/home/lenovo/hrrp2/hrrptest/hrrp_prj/data/soc/'
+  train_ratio: 0.7
+  train_path: 'datasets'
+  valid_path: 'datasets'
+  batch_size: 64
+  shuffle: True
+  length: 200
+
+
+train:
+  epochs: 30
+  learning_rate: 0.0003
+  kld_weight: 1
+  cls_weight: 0.01
+  rec_weight: 1
+
+  
+
+log:
+  epochs_print: 1
+  log_dir: "runs/e2eVAE"
+  name: 'e2eVAE'
+  save_pkl: True
