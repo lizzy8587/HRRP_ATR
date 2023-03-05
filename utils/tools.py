@@ -1,3 +1,13 @@
+#!/usr/bin/python
+# -*- encoding: utf-8 -*-
+'''
+@File         :   tools.py
+@Version      :   1.0
+@Time         :   2023/03/05 21:45:14
+@E-mail       :   daodao123@sjtu.edu.cn
+@Introduction :   日志模块(Logger)
+'''
+
 import sys
 import os
 
