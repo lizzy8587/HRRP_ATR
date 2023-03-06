@@ -23,7 +23,7 @@ class YantaiData():
         param       : complex(True返回复数/False返回幅度)
         return      : 2D-array，每一行代表一条hrrp
         '''
-        z = list(scio.loadmat(mat_path).values())[-1]
+        z = list(scio.loadmat(mat_path).values())[3]
         if not complex: z = abs(z)
         return z
 

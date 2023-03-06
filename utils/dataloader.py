@@ -13,6 +13,8 @@ from scipy.signal import find_peaks
 import numpy as np
 import torch
 import os
+import pandas as pd
+from .dataprocess import YantaiData
 
 class FeatureExtraction(object):
   '''
@@ -131,7 +133,7 @@ class To3DTensor(object):
 
 class hrrpDataset(torch.utils.data.Dataset):
   '''
-  description: generate a hrrp dataset format
+  description: generate a hrrp dataset format for Train_hrrp.mat (download from github)
   '''
   def __init__(self, filepath, train=True, transform=None):
     # read data
@@ -158,7 +160,7 @@ class hrrpDataset(torch.utils.data.Dataset):
 
 class hrrpDataset2(torch.utils.data.Dataset):
   '''
-  description: generate a hrrp dataset format
+  description: generate a hrrp dataset format (四类民船mat格式)
   '''
   def __init__(self, filepath, transform=None, length=None):
     # read data
@@ -178,7 +180,10 @@ class hrrpDataset2(torch.utils.data.Dataset):
           # length = length if length else len(x)
           if length:
             if length>len(x):
-              x = np.concatenate([x, np.zeros(length-len(x))], axis=0)
+              # x = np.concatenate([x, np.zeros(length-len(x))], axis=0)
+              left = int((length-len(x))/2)
+              right = length-len(x)-left
+              x = np.pad(x,(left,right),'constant',constant_values=0)
             else:
               x = x[0:length]
           hrrp.append(x[0:length])
@@ -204,7 +209,7 @@ class hrrpDataset2(torch.utils.data.Dataset):
 
 class hrrpDataset3(torch.utils.data.Dataset):
   '''
-  description: generate a hrrp dataset format
+  description: generate a hrrp dataset format(9类npy格式-mt)
   '''
   def __init__(self, filepath, transform=None, length=None):
     # read data
@@ -246,3 +251,56 @@ class hrrpDataset3(torch.utils.data.Dataset):
     # print(sample[0])
     return sample
 
+
+class hrrpDataset4(torch.utils.data.Dataset):
+  '''
+  description: generate a hrrp dataset format (Yantai dataset,mat格式)
+  '''
+  def __init__(self, filepath, transform=None, length=None):
+    # read data
+    targetsMMSI = os.listdir(filepath)
+    df = pd.read_csv(os.path.join(filepath, 'info.csv'))
+    df.MMSI = df.MMSI.astype('str')
+    mmsi2targets = dict(zip(df.MMSI, df.targetClass))
+    targets = set(df.targetClass)
+    targets2id = dict(zip(targets, [k for k in range(len(targets))]))
+
+    hrrp = []
+    labels = []
+    for targetMMSI in targetsMMSI:
+      target_dir = os.path.join(filepath, targetMMSI)
+      if not os.path.isdir(target_dir): continue
+      mat_path = os.path.join(target_dir, 'data.mat')
+      try:
+        x = YantaiData.read_hrrp_mat(mat_path, complex=False)
+        x = YantaiData.hrrp2d_filter(x)
+      except:
+        print('Load Error: ',mat_path)
+        continue
+      if length:
+        if length>x.shape[1]:
+          # x = np.concatenate([x, np.zeros(length-len(x))], axis=0)
+          left = int((length-x.shape[1])/2)
+          right = length-x.shape[1]-left
+          x = np.pad(x,(left,right),'constant',constant_values=0)
+        else:
+          x = x[:, 0:length]
+      hrrp.extend(x)
+      labels.extend([targets2id[mmsi2targets[targetMMSI]]]*len(x))
+
+    self.hrrp = np.array(hrrp)
+    self.labels = np.array(labels)
+    self.transform = transform
+
+  def __len__(self):
+    return len(self.labels)
+
+  def __getitem__(self, index):
+    sample = self.hrrp[index], self.labels[index]
+    if self.transform is not None:
+      sample = self.transform(sample)
+
+    if np.isinf(sample[0]).any():
+      print('inf data in index:',index)
+    # print(sample[0])
+    return sample
